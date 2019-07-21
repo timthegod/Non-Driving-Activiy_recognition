@@ -18,7 +18,7 @@ class spatial_dataset(Dataset):
     def __len__(self):
         return len(self.keys)
 
-    def load_ucf_image(self,video_name, index):
+    def load_nda_image(self,video_name, index):
        # if video_name.split('_')[0] == 'HandstandPushups':
        #     n,g = video_name.split('_',1)
        #     name = 'HandStandPushups_'+g
@@ -59,11 +59,11 @@ class spatial_dataset(Dataset):
             for i in range(len(clips)):
                 key = 'img'+str(i)
                 index = clips[i]
-                data[key] = self.load_ucf_image(video_name, index)
+                data[key] = self.load_nda_image(video_name, index)
                     
             sample = (data, label)
         elif self.mode=='val':
-            data = self.load_ucf_image(video_name,index)
+            data = self.load_nda_image(video_name,index)
             sample = (video_name, index, data, label)
         else:
             raise ValueError('There are only train and val mode')
