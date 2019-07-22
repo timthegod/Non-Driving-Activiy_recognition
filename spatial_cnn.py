@@ -238,6 +238,8 @@ class Spatial_CNN():
         self.model.eval()
 
         if self.evaluate and self.attMap:
+            if not os.path.isdir('attention_map'):
+                os.mkdir('attention_map')
             class SaveFeatures():
                 features=None
                 def __init__(self, m): self.hook = m.register_forward_hook(self.hook_fn)
