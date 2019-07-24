@@ -107,7 +107,11 @@ for ram, cate in enumerate(cate_image_path):
 				predict_frame = np.zeros([height, width, 3], dtype=np.uint8)
 				cv2.putText(predict_frame,'Percentage after fuse',(10, 30), font, 1,(0,255,255),1,cv2.LINE_AA)
 				for position, className in enumerate(classes):
-					cv2.putText(predict_frame,className,(10, (position+2)*30), font, 1,(255,255,255),1,cv2.LINE_AA)
+					if className == rgb_highest_percentage_cate_dic[cate]:
+						color = (0,0,255)
+					else:
+						color = (255,255,255)
+					cv2.putText(predict_frame,className,(10, (position+2)*30), font, 1,color,1,cv2.LINE_AA)
 					cv2.putText(predict_frame,str(round((percentage_cate_dic[cate])[position], 3))+'%',(250, (position+2)*30), font, 1,(0,255,0),1,cv2.LINE_AA)  				
 				
 				cv2.putText(predict_frame,'RGB stream:   ' + rgb_highest_percentage_cate_dic[cate],(10, (position+3)*30), font, 1,(255,255,0),1,cv2.LINE_AA)
