@@ -8,6 +8,7 @@ parser = argparse.ArgumentParser(description='Make demo video')
 parser.add_argument('--jpg-path', default='cropped_jpeg_1080', type=str, metavar='PATH', help='path to jpeg folder')
 parser.add_argument('--opt-path', default='cropped_flowNet_1080', type=str, metavar='PATH', help='path to opt folder')
 parser.add_argument('--participant', default='g03', type=str, help='participant name')
+parser.add_argument('--numberOfVideo', default=35, metavar='N', type=int, help='number of test video')
 parser.add_argument('--rgbPred', default='record/spatial/evel_spatial_video_preds.pickle', type=str, metavar='PATH', help='path to rbg prediction pickle' )
 parser.add_argument('--optPred', default='record/motion/evel_motion_video_preds.pickle', type=str, metavar='PATH', help='path to optical flow prediction pickle' )
 parser.add_argument('--classes', default='NDA_list/classInd.txt', type=str, metavar='PATH', help='path to optical flow prediction pickle' )
@@ -59,7 +60,7 @@ for name in sorted(rgb_dic_frame.keys()):
 		fuse_highest_percentage_cate_dic[name] = fuse_predict_class
 		rgb_highest_percentage_cate_dic[name] = rgb_predict_class
 		opt_highest_percentage_cate_dic[name] = optical_flow_predict_class
-print(cate_image_path)
+# print(cate_image_path)
 opt_image = []
 rbg_image= []
 
@@ -70,8 +71,9 @@ size = (height, width)
 rbg_root = arg.jpg_path
 opt_root = arg.opt_path
 font = cv2.FONT_HERSHEY_SIMPLEX
+num_video = arg.numberOfVideo
 for ram, cate in enumerate(cate_image_path):
-	if ram>35:
+	if ram>num_video:
 		break
 	ground_truth = cate.split('_g')[0]
 	opt_first_img = np.zeros([height, width, 3], dtype=np.uint8)
@@ -128,12 +130,11 @@ for ram, cate in enumerate(cate_image_path):
 	rgb = cv2.resize(rgb, size)
 	cv2.putText(rgb,'RGB frame',(10, 30), font, 1,(255,255,255),1,cv2.LINE_AA)
 	rbg_image.append(rgb)
-	print(len(rbg_image), len(opt_image))
+	print("current frames: ", len(rbg_image))
 
 # opt_last_img = np.zeros([height, width, 3], dtype=np.uint8)
 # opt_image.append(opt_last_img)
 
-print(len(rbg_image), len(opt_image))
 
 fourcc = cv2.VideoWriter_fourcc(*'mp4v')
 w = rbg_image[0].shape[0]
