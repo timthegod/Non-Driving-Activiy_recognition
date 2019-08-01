@@ -1,3 +1,5 @@
+# this code created by TingYu Yang 
+# split the data into correct folder with a correct index
 import os 
 import argparse
 from shutil import copyfile
@@ -22,6 +24,7 @@ if not os.path.isdir(jpg_des_path):
 	os.mkdir(jpg_des_path)
 if not os.path.isdir(opt_des_path):
 	os.mkdir(opt_des_path)
+	
 print('jpg splitting...')
 
 c_dic = {}

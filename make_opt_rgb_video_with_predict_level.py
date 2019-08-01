@@ -1,3 +1,5 @@
+# this code created by TingYu Yang 
+# generate a demo video of RGB frame and optical flow frame with prediction score with a same timeline
 import os
 import cv2
 import pickle

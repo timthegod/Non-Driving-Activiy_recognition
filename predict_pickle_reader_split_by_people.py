@@ -1,3 +1,5 @@
+# this code created by TingYu Yang 
+# get the prediction score and accuracy by participants using the score from evaluation
 import pickle
 import argparse
 import matplotlib.pyplot as plt 

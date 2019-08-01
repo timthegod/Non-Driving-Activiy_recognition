@@ -1,3 +1,5 @@
+# this code created by TingYu Yang 
+# get the prediction score and accuracy using the score from evaluation
 import pickle
 import argparse
 
@@ -9,6 +11,7 @@ global arg
 arg = parser.parse_args()
 print (arg)
 
+# Read prediction score
 with open(arg.rgbPred,'rb') as file:
     rgb_dic_frame = pickle.load(file)
 file.close()
@@ -17,6 +20,7 @@ with open(arg.optPred,'rb') as file:
     opt_dic_frame = pickle.load(file)
 file.close()
 
+# Read category name
 classes = []
 class_file = open('NDA_list/classInd.txt', 'r')
 for line in class_file:
@@ -31,12 +35,18 @@ fuse_correct = 0
 total = 0
 for name in sorted(rgb_dic_frame.keys()):
 	current_class = name.split('_')[0]
+
+	# normalise the score
 	r = rgb_dic_frame[name]
 	r = r/sum(abs(r))
 	o = opt_dic_frame[name]
 	o = o/sum(abs(o))
 	print(name, r, o)
+
+	#fuse two score
 	fuse = r+o
+
+	# decode the prediction category
 	rgb_predict_class = classes[r.tolist().index(max(r))]
 	optical_flow_predict_class = classes[o.tolist().index(max(o))]
 	fuse_predict_class = classes[fuse.tolist().index(max(fuse))]
@@ -48,6 +58,7 @@ for name in sorted(rgb_dic_frame.keys()):
 	if optical_flow_predict_class == current_class:
 		opt_correct += 1
 	total += 1
+	
 print('RGB Accuracy = ' + str(rgb_correct/total))
 print('Optical Flow Accuracy = ' + str(opt_correct/total))
 print('Fuse Accuracy = ' + str(fuse_correct/total))

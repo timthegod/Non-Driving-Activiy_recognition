@@ -1,3 +1,5 @@
+# this code is origin from jefferyHuang git repo, and editted by TingYu Yang 
+# create dictionary for data loading
 import os, pickle
 
 

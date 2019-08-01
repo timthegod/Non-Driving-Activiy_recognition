@@ -1,3 +1,4 @@
+# get the categoy from the jpeg data
 import os 
 from collections import OrderedDict
 from random import shuffle

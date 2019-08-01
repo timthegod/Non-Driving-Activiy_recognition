@@ -1,3 +1,5 @@
+# this code created by TingYu Yang 
+# get the frame count of each video and store the dictionary in pickle
 import pickle
 import os
 import argparse

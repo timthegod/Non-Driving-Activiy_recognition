@@ -1,3 +1,5 @@
+# this code created by TingYu Yang 
+# data shuffling and splitting by given ratio, and store the training and testing list into a txt file
 import os 
 from collections import OrderedDict
 from random import shuffle
@@ -8,8 +10,12 @@ parser.add_argument('--jpg-path', default='jpeg_1080', type=str, metavar='PATH',
 parser.add_argument('--train', default=70, type=int, metavar='N', help='ratio to split data for train')
 parser.add_argument('--test', default=20, type=int, metavar='N', help='ratio to split data for validate(test) during modeling')
 parser.add_argument('--inference', default=10, type=int, metavar='N', help='ratio to split data for inference')
+
+# sampled data: for training and validation
 train_list = open('NDA_list/trainlist01.txt', 'w')
 test_list = open('NDA_list/testlist01.txt', 'w')
+
+# non-sampled data: for inference, two list contains the same information 
 n_train_list = open('n_NDA_list/trainlist01.txt', 'w')
 n_test_list = open('n_NDA_list/testlist01.txt', 'w')
 
@@ -25,6 +31,8 @@ no_sample_file = []
 for dirc in os.listdir(src_jpg):
 	if dirc != '.DS_Store':
 		all_file_name.append(dirc + '.mp4')
+
+
 
 shuffle(all_file_name)
 l = len(all_file_name)

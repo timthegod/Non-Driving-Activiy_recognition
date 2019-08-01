@@ -1,3 +1,5 @@
+# this code is origin from jefferyHuang git repo, and editted by TingYu Yang 
+# create dataloader for temporal(motion) stream
 import numpy as np
 import pickle
 from PIL import Image
@@ -29,6 +31,7 @@ class motion_dataset(Dataset):
         self.img_rows=224
         self.img_cols=224
 
+    # for stacking 10 optical flow as the input for temporal(motion) stream
     def stackopf(self):
         name = self.video
         flowNet = self.root_dir + name
@@ -45,6 +48,7 @@ class motion_dataset(Dataset):
             
             imgFlowNet_image=(Image.open(flowNet_image))
 
+            # split RGB channel of optical flow
             red, green, blue = imgFlowNet_image.split()
             FLOWNET_R = self.transform(red)
             FLOWNET_G = self.transform(green)
@@ -96,7 +100,8 @@ class Motion_DataLoader():
         # split the training and testing videos
         splitter = NDA_splitter(path=nda_list,split=nda_split)
         self.train_video, self.test_video = splitter.split_video()
-        
+    
+
     def load_frame_count(self):
         #print '==> Loading frame number of each video'
         with open('dataloader/dic/frame_count.pickle','rb') as file:
@@ -108,8 +113,11 @@ class Motion_DataLoader():
             self.frame_count[videoname]=dic_frame[line] 
 
     def run(self):
+        # load frame count by frame count pickle
         self.load_frame_count()
+        # get the training dictionary
         self.get_training_dic()
+        # get the 19 sample frames for validation
         self.val_sample19()
         train_loader = self.train()
         val_loader = self.val()
@@ -171,12 +179,3 @@ class Motion_DataLoader():
             num_workers=self.num_workers)
 
         return val_loader
-
-if __name__ == '__main__':
-    data_loader =Motion_DataLoader(BATCH_SIZE=1,num_workers=1,in_channel=10,
-                                        path='/home/ubuntu/data/UCF101/tvl1_flow/',
-                                        ucf_list='/home/ubuntu/cvlab/pytorch/ucf101_two_stream/github/UCF_list/',
-                                        ucf_split='01'
-                                        )
-    train_loader,val_loader,test_video = data_loader.run()
-    #print train_loader,val_loader

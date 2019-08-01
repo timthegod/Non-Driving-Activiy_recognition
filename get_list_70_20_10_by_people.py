@@ -1,3 +1,5 @@
+# this code created by TingYu Yang 
+# data shuffling and splitting by given ratio by participants, and store the training and testing list into a txt file
 import os 
 from collections import OrderedDict
 from random import shuffle

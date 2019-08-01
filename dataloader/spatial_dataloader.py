@@ -1,3 +1,5 @@
+# this code is origin from jefferyHuang git repo, and editted by TingYu Yang 
+# craete dataloader for spatial stream
 import pickle
 from PIL import Image
 from torch.utils.data import Dataset, DataLoader
@@ -19,14 +21,8 @@ class spatial_dataset(Dataset):
         return len(self.keys)
 
     def load_nda_image(self,video_name, index):
-       # if video_name.split('_')[0] == 'HandstandPushups':
-       #     n,g = video_name.split('_',1)
-       #     name = 'HandStandPushups_'+g
-       #     path = self.root_dir + 'v_' + name + '/frame'
-       #    #path = self.root_dir + 'HandstandPushups'+'/separated_images/v_'+name+'/v_'+name+'_'
-       # else:
+
         path = self.root_dir + video_name + '/frame_' 
-            #path = self.root_dir + video_name.split('_')[0]+'/separated_images/v_'+video_name+'/v_'+video_name+'_'
         a = str(index)
         b = a.zfill(6)
         img = Image.open(path +str(b)+'.jpg')
@@ -93,8 +89,11 @@ class spatial_dataloader():
             self.frame_count[videoname]=dic_frame[line]
 
     def run(self):
+        # load frame count by frame count pickle
         self.load_frame_count()
+        # get the training dictionary
         self.get_training_dic()
+        # get the 19 sample frames for validation
         self.val_sample20()
         train_loader = self.train()
         val_loader = self.validate()
@@ -106,10 +105,10 @@ class spatial_dataloader():
         self.dic_training={}
         # 1 frame per video
         for video in self.train_video:
-            # 'video' here is key ex: Book_g01_c01
+            # 'video' here is key ex: tabletRead_g01_c01
             #print videoname
             nb_frame = self.frame_count[video]-10+1
-            # 'key' here is ex: 'Book_g01_c01 100-10+1' 
+            # 'key' here is ex: 'tabletRead_g01_c01 100-10+1' 
             # combine video name and frame count
             key = video+' '+ str(nb_frame)
             # value for dic_training is the class label
@@ -162,14 +161,3 @@ class spatial_dataloader():
             num_workers=self.num_workers)
         return val_loader
 
-
-
-
-
-if __name__ == '__main__':
-    
-    dataloader = spatial_dataloader(BATCH_SIZE=1, num_workers=1, 
-                                path='/home/ubuntu/data/UCF101/spatial_no_sampled/', 
-                                nda_list='/home/ubuntu/cvlab/pytorch/ucf101_two_stream/github/nda_list/',
-                                nda_split='01')
-    train_loader,val_loader,test_video = dataloader.run()

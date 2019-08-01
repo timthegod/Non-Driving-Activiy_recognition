@@ -1,4 +1,5 @@
 # this code is origin from jefferyHuang git repo, and editted by TingYu Yang 
+# train or evaluate process for temporal (motion) stream
 from __future__ import print_function
 import numpy as np
 import pickle
