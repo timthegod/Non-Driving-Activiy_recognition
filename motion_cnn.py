@@ -1,3 +1,4 @@
+# this code is origin from jefferyHuang git repo, and editted by TingYu Yang 
 from __future__ import print_function
 import numpy as np
 import pickle
@@ -93,7 +94,7 @@ class Motion_CNN():
 
     def build_model(self):
         print ('==> Build model and setup loss and optimizer')
-        #build model
+        #build model, 4 net-size is supported
         if self.net_size == 101:
             self.model = resnet101(pretrained= True, channel= self.channel, classes = self.classes).cuda()
         elif self.net_size == 50:
@@ -102,13 +103,14 @@ class Motion_CNN():
             self.model = resnet34(pretrained= True, channel= self.channel, classes = self.classes).cuda()
         elif self.net_size == 18:
             self.model = resnet18(pretrained= True, channel= self.channel, classes = self.classes).cuda()
-        #print self.model
+
         #Loss function and optimizer
         self.criterion = nn.CrossEntropyLoss().cuda()
         self.optimizer = torch.optim.SGD(self.model.parameters(), self.lr, momentum=0.9)
         self.scheduler = ReduceLROnPlateau(self.optimizer, 'min', patience=1,verbose=True)
 
     def resume_and_evaluate(self):
+        # check if needed to resume model
         if self.resume:
             if os.path.isfile(self.resume):
                 print("==> loading checkpoint '{}'".format(self.resume))
@@ -122,6 +124,7 @@ class Motion_CNN():
                   .format(self.resume, checkpoint['epoch'], self.best_prec1))
             else:
                 print("==> no checkpoint found at '{}'".format(self.resume))
+        # check if we are in evaluate mode
         if self.evaluate:
             self.epoch=0
             prec1, val_loss = self.validate_1epoch()
@@ -135,10 +138,12 @@ class Motion_CNN():
         self.resume_and_evaluate()
         cudnn.benchmark = True
         
+        # start epoch 
         for self.epoch in range(self.start_epoch, self.nb_epochs):
             train_loss = self.train_1epoch()
             prec1, val_loss = self.validate_1epoch()
             # is_best = (prec1 > self.best_prec1) or (train_loss < self.best_train_loss1 and prec1 == self.best_prec1)
+            # Compare if the best model occured
             if prec1 > self.best_prec1:
                 is_best = True
             elif prec1 == self.best_prec1 and train_loss < self.best_train_loss1:
@@ -147,14 +152,15 @@ class Motion_CNN():
                 is_best = False
             #lr_scheduler
             self.scheduler.step(val_loss)
-            # save model
+            # save the best model
             if is_best:
                 self.best_prec1 = prec1
                 self.best_train_loss1 = train_loss
                 with open('record/motion/motion_video_preds.pickle','wb') as f:
                     pickle.dump(self.dic_video_level_preds,f)
                 f.close() 
-            
+
+            # save the checkpoint model, code mantained in util.py
             save_checkpoint({
                 'epoch': self.epoch,
                 'state_dict': self.model.state_dict(),
@@ -262,7 +268,7 @@ class Motion_CNN():
                 }
         record_info(info, 'record/motion/opf_test.csv','test')
         return video_top1, video_loss
-
+    # calculate frame to video accuracy
     def frame2_video_level_accuracy(self):
      
         correct = 0
