@@ -1,3 +1,4 @@
+# this code is origin from jefferyHuang git repo, and editted by TingYu Yang 
 from __future__ import print_function
 import numpy as np
 import pickle
@@ -17,7 +18,7 @@ import torch.backends.cudnn as cudnn
 from torch.autograd import Variable
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 
-from torch.nn import functional as F #for CAM
+from torch.nn import functional as F #for CAM 
 from torch import topk
 
 import matplotlib.pyplot as plt
@@ -49,7 +50,7 @@ def main():
     arg = parser.parse_args()
     print (arg)
 
-    #Prepare DataLoader
+    # DataLoader Prepared 
     data_loader = dataloader.spatial_dataloader(
                         BATCH_SIZE=arg.batch_size,
                         num_workers=8,
@@ -58,7 +59,7 @@ def main():
                         nda_split ='01',
                         crop_size = arg.imgCropSize
                         )
-    
+    # store dataloader
     train_loader, test_loader, test_video = data_loader.run()
     #Model 
     model = Spatial_CNN(
@@ -98,7 +99,7 @@ class Spatial_CNN():
 
     def build_model(self):
         print ('==> Build model and setup loss and optimizer')
-        #build model
+        #build model, 4 net-size is supported
         if self.net_size == 101:
             self.model = resnet101(pretrained= True, channel=3, classes=self.classes).cuda()
         elif self.net_size == 50:
@@ -113,6 +114,7 @@ class Spatial_CNN():
         self.scheduler = ReduceLROnPlateau(self.optimizer, 'min', patience=1,verbose=True)
     
     def resume_and_evaluate(self):
+        # check if needed to resume model
         if self.resume:
             if os.path.isfile(self.resume):
                 print("==> loading checkpoint '{}'".format(self.resume))
@@ -126,26 +128,27 @@ class Spatial_CNN():
                   .format(self.resume, checkpoint['epoch'], self.best_prec1, self.best_train_loss1))
             else:
                 print("==> no checkpoint found at '{}'".format(self.resume))
+        # check if we are in evaluate mode
         if self.evaluate:
             self.epoch = 0
             prec1, val_loss = self.validate_1epoch()
+            # save the result of evaluation
             with open('record/spatial/evel_spatial_video_preds.pickle','wb') as f:
                 pickle.dump(self.dic_video_level_preds,f)
             f.close()
-            for key in self.cam:
-                over, img = self.cam[key]
-                self.vis_cam(key, over, img)
             return
 
     def run(self):
         self.build_model()
         self.resume_and_evaluate()
         cudnn.benchmark = True
-        
+
+        # start epoch 
         for self.epoch in range(self.start_epoch, self.nb_epochs):
             train_loss = self.train_1epoch()
             prec1, val_loss = self.validate_1epoch()
             
+            # Compare if the best model occured
             if prec1 > self.best_prec1:
                 is_best = True
             elif prec1 == self.best_prec1 and train_loss < self.best_train_loss1:
@@ -154,14 +157,15 @@ class Spatial_CNN():
                 is_best = False
             #lr_scheduler
             self.scheduler.step(val_loss)
-            # save model
+            # save the best model
             if is_best:
                 self.best_prec1 = prec1
                 self.best_train_loss1 = train_loss
                 with open('record/spatial/spatial_video_preds.pickle','wb') as f:
                     pickle.dump(self.dic_video_level_preds,f)
                 f.close()
-            
+
+            # save the checkpoint model, code mantained in util.py
             save_checkpoint({
                 'epoch': self.epoch,
                 'state_dict': self.model.state_dict(),
@@ -183,7 +187,6 @@ class Spatial_CNN():
         # mini-batch training
         progress = tqdm(self.train_loader)
         for i, (data_dict,label) in enumerate(progress):
-
     
             # measure data loading time
             data_time.update(time.time() - end)
@@ -237,9 +240,12 @@ class Spatial_CNN():
         # switch to evaluate mode
         self.model.eval()
 
+        # check if is in evaluate and user wants to generate attention map of last layer
         if self.evaluate and self.attMap:
             if not os.path.isdir('attention_map'):
                 os.mkdir('attention_map')
+
+            # save the layer feature for sttention map
             class SaveFeatures():
                 features=None
                 def __init__(self, m): self.hook = m.register_forward_hook(self.hook_fn)
@@ -248,6 +254,7 @@ class Spatial_CNN():
             final_layer = self.model._modules.get('layer4')
             activated_features = SaveFeatures(final_layer)
 
+            # function for getting the visualised attention map
             def getCAM(feature_conv, weight_fc, class_idx):
                 # weight_fc.shape (11, 2048)
                 cam_img_batch = []
@@ -278,11 +285,12 @@ class Spatial_CNN():
                 # compute output
                 output = self.model(data_var)
 
-                #for CAM
+                #for attention map
                 pred_probabilities = F.softmax(output, dim = 1)
-                # pred_probabilities = output.data.cpu().numpy()
+                # pred_probabilities = output.data.cpu().numpy() # deparced
                 activated_features.remove()
 
+                # get softmax_params at fully connation layer
                 weight_softmax_params = list(self.model._modules.get('fc_custom').parameters())
                 weight_softmax = np.squeeze(weight_softmax_params[0].cpu().data.numpy())
 
@@ -295,6 +303,7 @@ class Spatial_CNN():
                 # print(keys)
                 # print(ind.cpu().data.numpy())
                 
+                # save the attention map
                 for ind_save, image in enumerate(overlay):
                     out_img = data[ind_save].cpu().data.numpy().transpose(1,2,0) # transpose from (3,244,244) to (244,244,3)
 
@@ -311,9 +320,6 @@ class Spatial_CNN():
                     fig.savefig(os.path.join(root, '{}_{:02d}.jpg'.format(keys[ind_save], int(ind.cpu().data.numpy()[ind_save]))))   # save the figure to file
                     plt.close(fig) 
 
-                # self.cam[keys] = (overlay, data[class_idx])
-                
-                # self.vis_cam(keys, overlay, data[class_idx].cpu().data.numpy().reshape(w, h, ch))
                 # measure elapsed time
                 batch_time.update(time.time() - end)
                 end = time.time()
@@ -327,6 +333,7 @@ class Spatial_CNN():
                         self.dic_video_level_preds[videoName] = preds[j,:]
                     else:
                         self.dic_video_level_preds[videoName] += preds[j,:]
+        # training mode or evalution without attention map
         else:
             self.dic_video_level_preds={}
             end = time.time()
@@ -364,6 +371,7 @@ class Spatial_CNN():
         record_info(info, 'record/spatial/rgb_test.csv','test')
         return video_top1, video_loss
 
+    # calculate frame to video accuracy
     def frame2_video_level_accuracy(self):
             
         correct = 0
@@ -394,10 +402,6 @@ class Spatial_CNN():
         #print(' * Video level Prec@1 {top1:.3f}, Video level Prec@5 {top3:.3f}'.format(top1=top1, top3=top3))
         return top1,top3,loss.data.cpu().numpy()
 
-    def vis_cam(self, name, over, img):
-        print(name)
-        imshow((img * 255).astype(np.uint8))
-        imshow(skimage.transform.resize(over[0], over.shape[1:3]), alpha=0.5, cmap='jet')
 
 
 
