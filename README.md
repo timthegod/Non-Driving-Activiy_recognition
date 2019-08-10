@@ -9,7 +9,7 @@ The size is about 3G.
 
 ### 1.2 Temporal(motion) input data -> optical flow frame
 * In temporal stream, we used FlowNet 2.0 to extract the optical flow. The size is about 3G.
-* You could follow the [FlowNet2.0 Colab Notebook](https://drive.google.com/open?id=1H5EtxZYbVWRyc2MwdAA1wJWP9jsYAqWU) for obtaining the optical flow of the video stream
+* You could follow the [FlowNet2.0 Colab Notebook](https://colab.research.google.com/drive/1V_2n6RR_YOZzgmPzfBM-FxdOeBPuboGl) for obtaining the optical flow of the video stream
 
 ## 2. Model
 ### 2.1 Spatial Convolutional Neural Network (Spatial CNN)
