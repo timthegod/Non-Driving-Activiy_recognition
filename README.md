@@ -45,7 +45,7 @@ Fusion         | 96.4% |  
 * [Spatial resnet50](https://drive.google.com/open?id=1yAqPsX52jSthPVczzNCX8kizwOXRS9g8)
 * [Motion resnet50](https://drive.google.com/open?id=1p_o4Ca2arikxHwQ-hHQHpMZA2twyQvqa)
 
-## 7. Testing by yourself Device
+## 7. Testing by yourself 
 * The below is the link of my Google Colab notebook, all the instruction could be found on it. If there is any problem, leave a issue on this git repository.
 * [Google Colab notebook](https://colab.research.google.com/drive/119H6hfq19yO_OXuinyo44rFsgsxwhedh)
 
