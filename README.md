@@ -2,7 +2,7 @@
 We use a spatial and motion stream cnn with ResNet50 for modeling video information in NDAs (Non-Driving-Activities) dataset that collected ourselves. NDAs are one of driver's activity, however,  when level 3 Autonomous Vehicle is in autopilot mode, the primary task of drivers are no longer driving. But we still need to understand what the drivers are doing to know the reaction time, because if the driver needs to take control the reaction time of the period became a crucial information.
 For the motion stream we use FlowNet 2.0 to generate the optical flow.
 
-## 1. Data
+## 1. Data (Not open sourced yet)
 ### 1.1 Spatial input data -> rgb videos
 * This is the original video from our NDAs dataset.
 The size is about 3G.
@@ -42,8 +42,8 @@ Fusion         | 96.4% |  
 
 ## 6. Pre-trained Model
 
-* [Spatial resnet101](https://drive.google.com/open?id=1yAqPsX52jSthPVczzNCX8kizwOXRS9g8)
-* [Motion resnet101](https://drive.google.com/open?id=1p_o4Ca2arikxHwQ-hHQHpMZA2twyQvqa)
+* [Spatial resnet50](https://drive.google.com/open?id=1yAqPsX52jSthPVczzNCX8kizwOXRS9g8)
+* [Motion resnet50](https://drive.google.com/open?id=1p_o4Ca2arikxHwQ-hHQHpMZA2twyQvqa)
 
 ## 7. Testing by yourself Device
 * The below is the link of my Google Colab notebook, all the instruction could be found on it. If there is any problem, leave a issue on this git repository.
@@ -51,7 +51,7 @@ Fusion         | 96.4% |  
 * [NDAs recognition Github repository](https://github.com/timthegod/Non-Driving-Activiy_recognition)
 
 ## Acknowledgment
-* This code is modified from [jeffreyhuang1](https://github.com/jeffreyhuang1/two-stream-action-recognition). All the edition is completed by myself in order to fit the NDAs Recognition project.
+* This code is modified from [jeffreyhuang](https://github.com/jeffreyhuang1/two-stream-action-recognition). All the edition is completed by myself in order to fit the NDAs Recognition project.
 * The optical flow images was estimated using FlowNet 2.0 from [NVIDIA git repository](https://github.com/NVIDIA/flownet2-pytorch)
 
 
