@@ -48,7 +48,7 @@ Fusion         | 96.4% |  
 ## 7. Testing by yourself Device
 * The below is the link of my Google Colab notebook, all the instruction could be found on it. If there is any problem, leave a issue on this git repository.
 * [Google Colab notebook](https://colab.research.google.com/drive/119H6hfq19yO_OXuinyo44rFsgsxwhedh)
-* [NDAs recognition Github repository](https://github.com/timthegod/Non-Driving-Activiy_recognition)
+
 
 ## Acknowledgment
 * This code is modified from [jeffreyhuang](https://github.com/jeffreyhuang1/two-stream-action-recognition). All the edition is completed by myself in order to fit the NDAs Recognition project.
